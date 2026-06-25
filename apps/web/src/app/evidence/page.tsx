@@ -1,34 +1,14 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import Link from "next/link";
 import { TopNavBar } from "@/components/TopNavBar";
-import { EvidenceCard } from "@/components/EvidenceCard";
-import { EvidenceEmptyState } from "@/components/EvidenceEmptyState";
-import { EvidenceSkeleton } from "@/components/EvidenceSkeleton";
+import { EvidenceCard } from "@/components/evidence/EvidenceCard";
+import { EvidenceEmptyState } from "@/components/evidence/EvidenceEmptyState";
+import { EvidenceSkeleton } from "@/components/evidence/EvidenceSkeleton";
 import { useEvidenceStore } from "@/hooks/useEvidenceStore";
 
 export default function EvidenceDashboard() {
-  const { records, loading, error, addEvidence, refresh } = useEvidenceStore();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileSelect = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      try {
-        await addEvidence(file);
-      } catch (err) {
-        console.error("Failed to add evidence:", err);
-      }
-
-      // Reset the input so the same file can be added again if needed
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    },
-    [addEvidence]
-  );
+  const { records, loading, error, refresh } = useEvidenceStore();
 
   return (
     <>
@@ -44,21 +24,15 @@ export default function EvidenceDashboard() {
               Securely stored digital evidence.
             </p>
           </div>
-          <button
-            onClick={() => fileInputRef.current?.click()}
+          <Link
+            href="/evidence/create"
             className="inline-flex items-center justify-center gap-sm bg-primary text-on-primary text-xs font-medium px-md py-sm rounded-[0.25rem] inner-highlight hover:bg-primary-container hover:text-on-primary-container active:scale-[0.98] transition-all duration-150 ease-in-out whitespace-nowrap w-full md:w-auto"
           >
             <span className="material-symbols-outlined text-[18px]">
               add_box
             </span>
             Add Evidence
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="hidden"
-            onChange={handleFileSelect}
-          />
+          </Link>
         </header>
 
         {/* Error State */}

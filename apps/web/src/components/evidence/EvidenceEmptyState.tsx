@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 export function EvidenceEmptyState() {
   return (
     <div className="flex flex-col items-center justify-center text-center py-24 px-gutter">
@@ -23,11 +24,11 @@ export function EvidenceEmptyState() {
         Upload files to create verifiable evidence records.
       </p>
 
-      {/* CTA – the actual upload button is on the dashboard header, this is decorative */}
-      <div className="flex items-center gap-2 bg-primary text-on-primary text-xs font-medium px-6 py-3 rounded-lg shadow-sm inner-highlight pointer-events-none select-none">
+      {/* CTA */}
+      <Link href="/evidence/create" className="flex items-center gap-2 bg-primary hover:bg-on-primary-fixed-variant text-on-primary text-xs font-medium px-6 py-3 rounded-lg shadow-sm inner-highlight transition-colors select-none">
         <span className="material-symbols-outlined">upload_file</span>
         Add Your First Evidence
-      </div>
+      </Link>
     </div>
   );
 }

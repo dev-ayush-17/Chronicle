@@ -92,9 +92,15 @@ export default function EvidenceDetailPage({
     { label: "Original Filename", value: record.fileName, mono: true },
     { label: "File Size", value: formatFileSize(record.fileSize), mono: false },
     { label: "File Type", value: record.fileType || "Unknown", mono: false },
-    { label: "Created Date", value: record.createdAt, mono: true },
-    { label: "Last Modified", value: record.updatedAt, mono: true },
   ];
+  if (record.description) {
+    metadataRows.push({ label: "Description", value: record.description, mono: false });
+  }
+  if (record.tags && record.tags.length > 0) {
+    metadataRows.push({ label: "Tags", value: record.tags.join(", "), mono: false });
+  }
+  metadataRows.push({ label: "Created Date", value: record.createdAt, mono: true });
+  metadataRows.push({ label: "Last Modified", value: record.updatedAt, mono: true });
 
   return (
     <div className="min-h-screen bg-background">
@@ -116,6 +122,16 @@ export default function EvidenceDetailPage({
           <h1 className="text-xl font-semibold text-primary tracking-tight truncate flex-1">
             {record.fileName}
           </h1>
+          <div className="flex items-center gap-3">
+            <button className="bg-surface border border-outline text-on-surface text-xs font-medium px-4 py-2 rounded flex items-center gap-2 hover:bg-surface-container-low transition-colors shadow-[0_2px_4px_rgba(0,0,0,0.04)]">
+              <span className="material-symbols-outlined text-on-surface text-[18px]">download</span>
+              Export Record
+            </button>
+            <Link href={`/evidence/${record.id}/verify`} className="bg-primary text-on-primary text-xs font-medium px-4 py-2 rounded flex items-center gap-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:opacity-90 transition-opacity">
+              <span className="material-symbols-outlined text-on-primary text-[18px]">verified_user</span>
+              Verify Evidence
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -135,14 +151,21 @@ export default function EvidenceDetailPage({
                     Real-time cryptographic verification
                   </p>
                 </div>
-                <div className="bg-secondary-fixed text-on-secondary-fixed px-3 py-1.5 rounded-full flex items-center gap-2 border border-secondary-fixed-dim">
-                  <span className="material-symbols-outlined text-[16px]">
-                    {record.encrypted ? "lock" : "check_circle"}
-                  </span>
-                  <span className="text-xs font-bold">
-                    {record.encrypted ? "Encrypted" : "Preserved"}
-                  </span>
-                </div>
+                {record.verification?.valid ? (
+                  <div className="bg-[#dcfce7] text-[#166534] px-3 py-1.5 rounded-full flex items-center gap-2 border border-[#bbf7d0]">
+                    <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                    <span className="text-xs font-bold">Verified</span>
+                  </div>
+                ) : (
+                  <div className="bg-secondary-fixed text-on-secondary-fixed px-3 py-1.5 rounded-full flex items-center gap-2 border border-secondary-fixed-dim">
+                    <span className="material-symbols-outlined text-[16px]">
+                      {record.encrypted ? "lock" : "check_circle"}
+                    </span>
+                    <span className="text-xs font-bold">
+                      {record.encrypted ? "Encrypted" : "Preserved"}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -294,6 +317,22 @@ export default function EvidenceDetailPage({
                     </h4>
                     <p className="text-sm text-outline mt-1">
                       Evidence metadata was updated.
+                    </p>
+                  </div>
+                )}
+
+                {/* Timeline Item: Verified */}
+                {record.verification?.valid && (
+                  <div className="relative pl-6 mt-6">
+                    <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_0_4px_var(--color-background)]" />
+                    <p className="text-xs font-medium text-on-surface-variant mb-1 uppercase tracking-wide">
+                      {record.verification.verifiedAt}
+                    </p>
+                    <h4 className="text-base text-on-surface font-medium">
+                      Evidence Verified
+                    </h4>
+                    <p className="text-sm text-outline mt-1">
+                      Automated system verification completed against baseline.
                     </p>
                   </div>
                 )}

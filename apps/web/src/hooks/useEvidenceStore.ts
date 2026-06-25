@@ -9,6 +9,7 @@ import {
   hashFile,
   createEvidenceRecord,
 } from "@chronicle/shared";
+import { UploadDraft, UploadStatus } from "@/types/upload";
 
 interface UseEvidenceStoreReturn {
   records: EvidenceRecord[];
@@ -20,8 +21,11 @@ interface UseEvidenceStoreReturn {
 }
 
 export function useEvidenceStore(): UseEvidenceStoreReturn {
-  const [records, setRecords] = useState<EvidenceRecord[]>([]);
+
+  const [records, setRecords] = useState<EvidenceRecord[]>([])
+
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {

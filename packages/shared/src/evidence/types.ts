@@ -16,9 +16,14 @@ export interface VerificationResult {
 export interface EvidenceRecord {
   id: string
 
+  schemaVersion: 1
+
   fileName: string
   fileSize: number
   fileType: string
+
+  description?: string
+  tags?: string[]
 
   hash: string
 
@@ -28,4 +33,5 @@ export interface EvidenceRecord {
   encrypted: boolean
 
   encryption?: EncryptionMetadata
+  verification?: VerificationResult
 }
