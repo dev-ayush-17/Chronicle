@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { hashFile } from "@chronicle/shared";
-import { saveEvidence } from "@chronicle/shared";
+import { saveEvidence, createEvidenceRecord } from "@chronicle/shared";
 
 export function useEvidence() {
   const [loading, setLoading] = useState(false);
@@ -14,13 +14,7 @@ export function useEvidence() {
     try {
       const hash = await hashFile(file);
 
-      const record = {
-        id: crypto.randomUUID(),
-        fileName: file.name,
-        hash,
-        createdAt: Date.now(),
-        encrypted: false,
-      };
+      const record = createEvidenceRecord(file, hash);
 
       await saveEvidence(record);
 

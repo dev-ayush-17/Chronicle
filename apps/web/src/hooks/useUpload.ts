@@ -1,5 +1,7 @@
 "use client"
 
+// DEAD CODE DO NOT TRY TO MODIFY AS IT NOT BEING USED ANYWHERE
+
 import { useCallback, useState } from "react"
 import type { EvidenceRecord } from "@chronicle/shared"
 
@@ -14,12 +16,14 @@ import {
     saveEvidence,
     getAllEvidence,
     createEvidenceRecord,
+    storage
 } from "@chronicle/shared"
 import { promises, setDefaultResultOrder } from "dns"
 import { useCall } from "wagmi"
 import { MaxFeePerGasTooLowError } from "viem"
 
 const MAX_UPLOAD_SIZE = 250 * 1024 * 1024
+console.log("Storage class:", storage);
 
 interface UseUploadReturn {
     status: UploadStatus
@@ -38,7 +42,6 @@ interface UseUploadReturn {
 }
 
 export function useUpload(): UseUploadReturn {
-    
     const [status, setStatus] = useState<UploadStatus>("idle")
 
     const [draft, setDraft] = useState<UploadDraft | null>(null)
@@ -98,6 +101,7 @@ export function useUpload(): UseUploadReturn {
             input?: UploadInput
         ): Promise<EvidenceRecord> => {
             try {
+                console.log("Confirm")
                 if (!draft) {
                     throw new Error (
                         "No file selected for Upload."
@@ -119,11 +123,21 @@ export function useUpload(): UseUploadReturn {
                         "Evidence with this hash already exists."
                     )
                 }
+                 console.log("file storing")
+                const storedFile = await storage.store(
+                    draft.file,
+                    {
+                        fileName: draft.file.name,
+                        mimeType: draft.file.type,
+                    }
+                )
+                console.log("stored")
 
                 const record = createEvidenceRecord(
                     draft.file, draft.hash, {
                         description: input?.description,
                         tags: input?.tags,
+                        fileId: storedFile.id,
                     }
                 )
 

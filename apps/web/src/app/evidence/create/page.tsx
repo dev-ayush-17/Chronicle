@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { hashFile, createEvidenceRecord, saveEvidence } from "@chronicle/shared";
+import { uploadEvidenceFile } from "@/lib/storage/uploadFile";
 
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 B";
@@ -90,9 +91,12 @@ export default function CreateEvidencePage() {
         .map((t) => t.trim())
         .filter((t) => t.length > 0);
         
+      const storedFile = await uploadEvidenceFile(file);
+
       const record = createEvidenceRecord(file, hash, {
         description: description.trim() || undefined,
         tags: parsedTags.length > 0 ? parsedTags : undefined,
+        fileId: storedFile.id,
       });
       
       await saveEvidence(record);

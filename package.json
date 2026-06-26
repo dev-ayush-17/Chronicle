@@ -12,6 +12,7 @@
     "lint": "turbo lint"
   },
   "devDependencies": {
+    "@types/node": "^26.0.1",
     "turbo": "^2.9.18"
   }
 }

@@ -13,3 +13,8 @@ export * from "./evidence/store";
 
 // Verification
 export * from "./evidence/verify";
+
+// Storage Layer
+export * from "./storage/provider";
+export * from "./storage/types";
+export * from "./storage/SupabaseStorageProvider";

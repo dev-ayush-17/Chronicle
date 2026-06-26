@@ -18,6 +18,8 @@ export function createEvidenceRecord(
 
         hash,
 
+        fileId: options?.fileId,
+
         description: options?.description,
         tags: options?.tags,
 
@@ -31,4 +33,5 @@ export function createEvidenceRecord(
 export interface CreateEvidenceOptions {
     description?: string
     tags?: string[]
+    fileId?: string
 }

@@ -27,6 +27,8 @@ export interface EvidenceRecord {
 
   hash: string
 
+  fileId?: string
+
   createdAt: string
   updatedAt: string
 

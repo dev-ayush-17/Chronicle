@@ -2,7 +2,8 @@ import { EvidenceRecord } from "./types";
 
 const DB_NAME = "chronicle-db";
 const STORE_NAME = "evidence";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
+const FILES_STORE = "files"
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -19,6 +20,12 @@ function openDB(): Promise<IDBDatabase> {
 
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, {
+          keyPath: "id",
+        });
+      }
+
+      if (!db.objectStoreNames.contains("files")) {
+        db.createObjectStore(FILES_STORE, {
           keyPath: "id",
         });
       }
