@@ -13,3 +13,4 @@ docs/
 chronicle_audit_roadmap.md
 WorkFlow.md 
 architecture.md
+.gitignore
