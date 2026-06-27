@@ -214,17 +214,9 @@ Please ensure your code follows the existing style and includes appropriate docu
 
 ---
 
-# 📄 License
-
-This project is licensed under the **MIT License**.
-
-See the `LICENSE` file for more information.
-
----
-
 <div align="center">
 
-Built with ❤️ using **Next.js**, **Supabase**, and **Blockchain**.
+Built with 🔮 by **lbyarinth**.
 
 **Chronicle — Preserve • Verify • Prove**
 
