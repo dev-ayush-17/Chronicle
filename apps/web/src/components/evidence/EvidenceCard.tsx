@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { EvidenceRecord } from "@chronicle/shared";
+import { sepoliaExplorerTxUrl, shortenTxHash } from "@/lib/web3/format";
 
 interface EvidenceCardProps {
   record: EvidenceRecord;
@@ -40,6 +41,7 @@ function formatDate(isoString: string): string {
 export function EvidenceCard({ record }: EvidenceCardProps) {
   const icon = getFileIcon(record.fileType);
   const isEncrypted = record.encrypted;
+  const isAnchored = !!record.blockchainTxHash;
 
   return (
     <article className="bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col gap-sm hover:border-primary hover:shadow-[0_2px_12px_-4px_rgba(26,20,107,0.1)] transition-all duration-200 group">
@@ -60,9 +62,9 @@ export function EvidenceCard({ record }: EvidenceCardProps) {
         </div>
         <div className="inline-flex items-center gap-xs bg-secondary-fixed text-on-secondary-fixed text-xs font-mono px-2 py-1 rounded-[0.25rem]">
           <span className="material-symbols-outlined text-[14px]">
-            {isEncrypted ? "lock" : "verified"}
+            {isEncrypted ? "lock" : isAnchored ? "link" : "verified"}
           </span>
-          {isEncrypted ? "Encrypted" : "Preserved"}
+          {isEncrypted ? "Encrypted" : isAnchored ? "Anchored" : "Preserved"}
         </div>
       </div>
 
@@ -100,6 +102,31 @@ export function EvidenceCard({ record }: EvidenceCardProps) {
           </button>
         </div>
       </div>
+
+      {/* Blockchain Anchor Row — only shown when anchored */}
+      {isAnchored && record.blockchainTxHash && (
+        <div className="flex flex-col gap-xs mt-xs">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-on-surface-variant">
+            Blockchain Anchor
+          </span>
+          <a
+            href={sepoliaExplorerTxUrl(record.blockchainTxHash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-sm bg-surface-container-low p-xs rounded-[0.25rem] border border-surface-variant font-mono text-xs text-primary hover:bg-primary/5 transition-colors"
+            title={record.blockchainTxHash}
+          >
+            <span className="material-symbols-outlined text-[14px] opacity-70 text-on-surface-variant">
+              link
+            </span>
+            <span className="truncate flex-1">{shortenTxHash(record.blockchainTxHash)}</span>
+            <span className="material-symbols-outlined text-[14px] opacity-70">
+              open_in_new
+            </span>
+          </a>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="mt-auto pt-md flex justify-end">

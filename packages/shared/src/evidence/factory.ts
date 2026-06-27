@@ -23,6 +23,8 @@ export function createEvidenceRecord(
         description: options?.description,
         tags: options?.tags,
 
+        blockchainTxHash: options?.blockchainTxHash,
+
         createdAt: timestamp,
         updatedAt: timestamp,
 
@@ -34,4 +36,6 @@ export interface CreateEvidenceOptions {
     description?: string
     tags?: string[]
     fileId?: string
+    /** Polygon Amoy transaction hash from server-side blockchain anchoring */
+    blockchainTxHash?: string
 }

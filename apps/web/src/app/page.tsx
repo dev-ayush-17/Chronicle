@@ -1,5 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import { TopNavBar } from "@/components/TopNavBar";
+import screenImg from "../screen.png";
 
 export default function Home() {
   return (
@@ -51,34 +53,34 @@ export default function Home() {
                   arrow_forward
                 </span>
               </Link>
-              <button className="bg-surface-container-lowest border border-outline-variant hover:border-primary hover:text-primary text-on-surface text-sm px-lg py-sm rounded-[0.25rem] transition-all duration-150 ease-in-out flex items-center gap-sm">
+              <Link 
+              href="https://github.com/dev-ayush-17/Chronicle"
+              className="bg-surface-container-lowest border border-outline-variant hover:border-primary hover:text-primary text-on-surface text-sm px-lg py-sm rounded-[0.25rem] transition-all duration-150 ease-in-out flex items-center gap-sm">
                 Learn More
-              </button>
+              </Link>
             </div>
           </div>
 
           {/* Hero Visual */}
-          <div className="mt-24 w-full max-w-[1000px] aspect-[21/9] rounded-xl overflow-hidden border border-surface-variant relative shadow-[0_2px_12px_rgba(0,0,0,0.04)] bg-surface-container-lowest flex items-center justify-center p-xs">
-            <div className="w-full h-full rounded-lg bg-surface-container-low flex items-center justify-center relative overflow-hidden">
-              {/* Abstract pattern */}
-              <div className="absolute inset-0 opacity-10"
-                style={{
-                  backgroundSize: "48px 48px",
-                  backgroundImage:
-                    "linear-gradient(45deg, #1a146b 25%, transparent 25%, transparent 75%, #1a146b 75%), linear-gradient(45deg, #1a146b 25%, transparent 25%, transparent 75%, #1a146b 75%)",
-                  backgroundPosition: "0 0, 24px 24px",
-                }}
+          <div className="mt-20 w-full max-w-[900px] rounded-xl overflow-hidden border border-surface-variant/50 relative shadow-2xl shadow-primary/5 bg-surface-container-lowest flex flex-col">
+            {/* Browser Header Mock */}
+            <div className="h-10 w-full bg-surface-container-low border-b border-surface-variant flex items-center px-4 gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+              <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+              <div className="ml-4 h-5 flex-1 max-w-[200px] bg-surface-container-highest rounded-md"></div>
+            </div>
+            
+            <div className="w-full relative bg-surface-container-lowest flex items-center justify-center overflow-hidden aspect-[16/10]">
+              <Image 
+                src={screenImg}
+                alt="Chronicle Dashboard Interface"
+                fill
+                className="object-cover object-top"
+                priority
               />
-              <div className="flex flex-col items-center gap-4 z-10">
-                <span className="material-symbols-outlined text-primary opacity-30" style={{ fontSize: "64px" }}>
-                  security
-                </span>
-                <span className="font-mono text-xs text-outline uppercase tracking-widest">
-                  Cryptographic Evidence Vault
-                </span>
-              </div>
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-surface/50 to-transparent" />
+              {/* Subtle inner shadow for depth */}
+              <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.05)] pointer-events-none" />
             </div>
           </div>
         </section>

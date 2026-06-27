@@ -20,8 +20,10 @@ export function EvidenceEmptyState() {
       <h2 className="text-2xl md:text-4xl font-semibold text-on-surface mb-4">
         No evidence records yet
       </h2>
-      <p className="text-base text-on-surface-variant max-w-md mx-auto mb-8">
-        Upload files to create verifiable evidence records.
+      <p className="text-base text-on-surface-variant max-w-2xl mx-auto mb-8 text-center leading-7">
+       Every piece of digital evidence deserves a trustworthy history. Upload your
+       first file to create a permanent, cryptographically verifiable evidence
+       record.
       </p>
 
       {/* CTA */}

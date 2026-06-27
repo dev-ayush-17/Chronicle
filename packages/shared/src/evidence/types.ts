@@ -29,6 +29,13 @@ export interface EvidenceRecord {
 
   fileId?: string
 
+  /**
+   * Transaction hash from the Polygon Amoy blockchain anchor.
+   * Populated after the file is anchored via ChronicleAnchor.sol.
+   * null/undefined means the file has not yet been anchored on-chain.
+   */
+  blockchainTxHash?: string
+
   createdAt: string
   updatedAt: string
 

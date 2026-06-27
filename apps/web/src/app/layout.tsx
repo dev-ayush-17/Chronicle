@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/lib/web3/providers";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Chronicle – Preserve Digital Evidence",
@@ -28,7 +29,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-on-background font-sans">
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

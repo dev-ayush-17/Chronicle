@@ -11,4 +11,6 @@ export interface StoredFile {
     mimeType: string
     provider: StorageProviderType
     createdAt: string
-}
+    /** Polygon Amoy transaction hash. Present when blockchain anchoring succeeded. */
+    blockchainTxHash?: string
+}

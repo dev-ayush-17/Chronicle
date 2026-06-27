@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import type { EvidenceRecord } from "@chronicle/shared";
 import { getEvidence } from "@chronicle/shared";
+import { sepoliaExplorerTxUrl, shortenTxHash } from "@/lib/web3/format";
 
 /** Formats bytes into a human-readable string */
 function formatFileSize(bytes: number): string {
@@ -209,6 +210,53 @@ export default function EvidenceDetailPage({
                   </div>
                 </div>
               </div>
+
+              {/* Blockchain Anchor Section */}
+              {record.blockchainTxHash ? (
+                <div className="mt-6 pt-4 border-t border-surface-container-low">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="material-symbols-outlined text-[18px] text-primary">link</span>
+                    <span className="text-sm font-semibold text-on-surface">Blockchain Anchor</span>
+                    <span className="inline-flex items-center gap-1 bg-[#dcfce7] text-[#166534] text-xs font-medium px-2 py-0.5 rounded-full border border-[#bbf7d0]">
+                      <span className="material-symbols-outlined text-[12px]">check_circle</span>
+                      On-chain
+                    </span>
+                  </div>
+                  <div className="bg-surface-container-low p-3 rounded-[0.25rem] border border-outline-variant">
+                    <p className="text-xs text-on-surface-variant mb-1 uppercase tracking-wider font-medium">Transaction Hash (Sepolia)</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <code className="font-mono text-xs text-primary truncate flex-1">
+                        {record.blockchainTxHash}
+                      </code>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          className="p-1 hover:bg-surface-variant rounded-[0.25rem] transition-colors"
+                          title="Copy transaction hash"
+                          onClick={() => navigator.clipboard.writeText(record.blockchainTxHash!)}
+                        >
+                          <span className="material-symbols-outlined text-outline text-[16px]">content_copy</span>
+                        </button>
+                        <a
+                          href={sepoliaExplorerTxUrl(record.blockchainTxHash)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:text-primary-hover p-1 rounded transition-colors"
+                          title="View on Sepolia Explorer"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-6 pt-4 border-t border-surface-container-low">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-outline">link_off</span>
+                    <span className="text-sm text-on-surface-variant">Not anchored on blockchain yet</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Metadata Table */}
@@ -318,6 +366,32 @@ export default function EvidenceDetailPage({
                     <p className="text-sm text-outline mt-1">
                       Evidence metadata was updated.
                     </p>
+                  </div>
+                )}
+
+                {/* Timeline Item: Blockchain Anchored */}
+                {record.blockchainTxHash && (
+                  <div className="relative pl-6">
+                    <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1.5 shadow-[0_0_0_4px_var(--color-background)]" />
+                    <p className="text-xs font-medium text-on-surface-variant mb-1 uppercase tracking-wide">
+                      {record.createdAt}
+                    </p>
+                    <h4 className="text-base text-on-surface font-medium flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[16px] text-primary">link</span>
+                      Anchored on Blockchain
+                    </h4>
+                    <p className="text-sm text-outline mt-1 mb-1">
+                      SHA-256 hash recorded on Sepolia via ChronicleAnchor contract.
+                    </p>
+                    <a
+                      href={sepoliaExplorerTxUrl(record.blockchainTxHash)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-primary hover:underline font-mono"
+                    >
+                      {shortenTxHash(record.blockchainTxHash)}
+                      <span className="material-symbols-outlined text-[12px]">open_in_new</span>
+                    </a>
                   </div>
                 )}
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { hashFile, createEvidenceRecord, saveEvidence } from "@chronicle/shared";
 import { uploadEvidenceFile } from "@/lib/storage/uploadFile";
+import { sepoliaExplorerTxUrl } from "@/lib/web3/format";
 
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 B";
@@ -27,7 +28,8 @@ export default function CreateEvidencePage() {
   
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+  const [anchorTxHash, setAnchorTxHash] = useState<string | null>(null);
+
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleFile = async (selectedFile: File) => {
@@ -84,19 +86,33 @@ export default function CreateEvidencePage() {
     
     setIsSaving(true);
     setError(null);
+    setAnchorTxHash(null);
     
     try {
       const parsedTags = tags
         .split(",")
         .map((t) => t.trim())
         .filter((t) => t.length > 0);
-        
-      const storedFile = await uploadEvidenceFile(file);
+
+      const trimmedDescription = description.trim() || undefined;
+      const parsedTagsFiltered = parsedTags.length > 0 ? parsedTags : undefined;
+
+      // Upload file + metadata to server (anchoring happens server-side)
+      const storedFile = await uploadEvidenceFile(file, hash, {
+        description: trimmedDescription,
+        tags: parsedTagsFiltered,
+      });
+
+      // Store tx hash locally if anchoring succeeded
+      if (storedFile.blockchainTxHash) {
+        setAnchorTxHash(storedFile.blockchainTxHash);
+      }
 
       const record = createEvidenceRecord(file, hash, {
-        description: description.trim() || undefined,
-        tags: parsedTags.length > 0 ? parsedTags : undefined,
+        description: trimmedDescription,
+        tags: parsedTagsFiltered,
         fileId: storedFile.id,
+        blockchainTxHash: storedFile.blockchainTxHash,
       });
       
       await saveEvidence(record);
@@ -252,25 +268,33 @@ export default function CreateEvidencePage() {
           </div>
           
           {/* Section 3: Action Footer */}
-          <div className="bg-surface border-t border-surface-variant px-lg py-md flex items-center justify-end gap-md">
-            <Link 
-              href="/evidence"
-              className="px-md py-sm rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-md text-label-md font-medium hover:bg-surface-container-low transition-colors"
-            >
-              Cancel
-            </Link>
-            <button 
-              type="button" 
-              onClick={handleSubmit}
-              disabled={!file || !hash || isSaving}
-              className="px-md py-sm rounded bg-primary text-on-primary font-label-md text-label-md font-medium hover:bg-on-primary-fixed-variant transition-colors shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {isSaving && <div className="w-4 h-4 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></div>}
-              {isSaving ? "Creating..." : "Create Evidence Record"}
-            </button>
+          <div className="bg-surface border-t border-surface-variant px-lg py-md flex flex-col gap-sm">
+            {/* Blockchain anchoring note */}
+            <p className="text-xs text-on-surface-variant text-right">
+              <span className="material-symbols-outlined text-[14px] align-middle mr-1">link</span>
+              Evidence will be anchored on Sepolia after upload
+            </p>
+            <div className="flex items-center justify-end gap-md">
+              <Link 
+                href="/evidence"
+                className="px-md py-sm rounded border border-outline-variant bg-surface-container-lowest text-on-surface font-label-md text-label-md font-medium hover:bg-surface-container-low transition-colors"
+              >
+                Cancel
+              </Link>
+              <button 
+                type="button" 
+                onClick={handleSubmit}
+                disabled={!file || !hash || isSaving}
+                className="px-md py-sm rounded bg-primary text-on-primary font-label-md text-label-md font-medium hover:bg-on-primary-fixed-variant transition-colors shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isSaving && <div className="w-4 h-4 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></div>}
+                {isSaving ? "Uploading & Anchoring…" : "Create Evidence Record"}
+              </button>
+            </div>
           </div>
         </div>
       </main>
     </div>
+
   );
 }

@@ -1,9 +1,2 @@
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { sepolia } from "wagmi/chains";
-
-export const config = getDefaultConfig({
-  appName: "Chronicle",
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
-  chains: [sepolia],
-  ssr: true,
-});
+// Re-export the wagmi configuration so providers.tsx can import { config } from "./config"
+export { config } from "./wagmi";

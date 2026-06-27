@@ -7,6 +7,8 @@ import type { EvidenceRecord, VerificationResult } from "@chronicle/shared";
 import { getEvidence, updateEvidence } from "@chronicle/shared";
 import { hashFile } from "@chronicle/shared/src/evidence/hash";
 import { verifyHash } from "@chronicle/shared/src/evidence/verify";
+import { verifyAnchorOnChain, type AnchorVerificationResult } from "@/lib/web3/verifyAnchor";
+import { sepoliaExplorerTxUrl, shortenTxHash } from "@/lib/web3/format";
 
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 B";
@@ -33,6 +35,10 @@ export default function VerifyPage({
   
   // Need to store the result locally to render the success/tampered states immediately
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
+
+  // On-chain anchor verification state
+  const [onChainStatus, setOnChainStatus] = useState<"idle" | "checking" | "done">("idle");
+  const [onChainResult, setOnChainResult] = useState<AnchorVerificationResult | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -115,8 +121,28 @@ export default function VerifyPage({
     setUploadedFile(null);
     setVerificationResult(null);
     setStatus("initial");
+    setOnChainStatus("idle");
+    setOnChainResult(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+
+  const handleVerifyOnChain = async () => {
+    if (!record?.blockchainTxHash) return;
+    setOnChainStatus("checking");
+    try {
+      const result = await verifyAnchorOnChain(record.blockchainTxHash, record.hash);
+      setOnChainResult(result);
+    } catch (err) {
+      setOnChainResult({
+        verified: false,
+        txHash: record.blockchainTxHash,
+        explorerUrl: sepoliaExplorerTxUrl(record.blockchainTxHash),
+        reason: err instanceof Error ? err.message : "Unknown error",
+      });
+    } finally {
+      setOnChainStatus("done");
     }
   };
 
@@ -281,21 +307,21 @@ export default function VerifyPage({
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
-                      className={`w-full max-w-lg border-2 border-dashed rounded-xl p-xl flex flex-col items-center justify-center text-center transition-colors duration-200 ${
+                      className={`w-full max-w-2xl border-2 border-dashed rounded-xl p-xl flex flex-col items-center justify-center text-center transition-colors duration-200 ${
                         isDragging
                           ? "border-[#312E81] bg-[#f2f4f6]"
                           : "border-outline-variant bg-surface-bright"
                       }`}
                     >
-                      <div className="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center text-primary mb-md">
+                      <div className="w-16 h-16 rounded-full w-full max-w-2xl bg-surface-container-low flex items-center justify-center text-primary mb-md">
                         <span className="material-symbols-outlined text-[32px]">
                           upload_file
                         </span>
                       </div>
-                      <h4 className="font-body-lg text-body-lg font-semibold text-on-surface mb-2">
+                      <h4 className="font-body-lg text-body-lg w-full max-w-2xl font-semibold text-on-surface mb-2 text-center w-full">
                         Upload File for Comparison
                       </h4>
-                      <p className="font-body-md text-body-md text-on-surface-variant mb-lg max-w-sm">
+                      <p className="font-body-md text-body-md w-full max-w-2xl text-on-surface-variant mb-lg">
                         Upload the file you wish to compare against the original
                         record to verify its integrity.
                       </p>
@@ -363,7 +389,7 @@ export default function VerifyPage({
                     <h2 className="font-headline-md text-headline-md text-primary mb-2">
                       Hashing / Processing
                     </h2>
-                    <p className="font-body-md text-body-md text-on-surface-variant mb-8 max-w-md">
+                    <p className="font-body-md text-body-md text-on-surface-variant mb-8 max-w-2xl">
                       Computing SHA-256 Fingerprint and validating against
                       records. This ensures absolute cryptographic integrity of
                       the evidence payload.
@@ -397,7 +423,7 @@ export default function VerifyPage({
                   <h1 className="font-headline-lg text-headline-lg text-on-surface mb-xs relative z-10">
                     VERIFIED
                   </h1>
-                  <p className="font-body-lg text-body-lg text-on-surface-variant max-w-md relative z-10">
+                  <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl relative z-10">
                     Integrity Preserved. The uploaded file exactly matches the
                     original evidence record.
                   </p>
@@ -652,6 +678,65 @@ export default function VerifyPage({
                     ensure maximum confidentiality.
                   </p>
                 </div>
+
+                {/* Blockchain Proof Panel */}
+                {record.blockchainTxHash && (
+                  <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+                    <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-md border-b border-outline-variant pb-2 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[16px]">link</span>
+                      Blockchain Proof
+                    </h3>
+
+                    <div className="mb-md">
+                      <p className="font-label-md text-label-md text-on-surface-variant mb-xs">Transaction Hash</p>
+                      <a
+                        href={record.blockchainTxHash ? sepoliaExplorerTxUrl(record.blockchainTxHash) : "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-xs text-primary hover:underline break-all inline-flex items-center gap-1"
+                      >
+                        {record.blockchainTxHash ? shortenTxHash(record.blockchainTxHash, 10) : ""}
+                        <span className="material-symbols-outlined text-[12px]">open_in_new</span>
+                      </a>
+                    </div>
+
+                    {/* On-chain verify button */}
+                    {onChainStatus === "idle" && (
+                      <button
+                        onClick={handleVerifyOnChain}
+                        className="w-full flex items-center justify-center gap-2 bg-primary/10 text-primary border border-primary/20 font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-primary/20 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">verified</span>
+                        Verify on Chain
+                      </button>
+                    )}
+
+                    {onChainStatus === "checking" && (
+                      <div className="flex items-center justify-center gap-2 py-2 text-on-surface-variant text-sm">
+                        <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        Querying Sepolia…
+                      </div>
+                    )}
+
+                    {onChainStatus === "done" && onChainResult && (
+                      <div className={`rounded-lg p-sm border text-sm ${onChainResult.verified ? "bg-[#dcfce7] border-[#bbf7d0] text-[#166534]" : "bg-error-container border-error text-on-error-container"}`}>
+                        <div className="flex items-center gap-2 font-semibold mb-1">
+                          <span className="material-symbols-outlined text-[16px]">
+                            {onChainResult.verified ? "check_circle" : "cancel"}
+                          </span>
+                          {onChainResult.verified ? "On-chain hash matches ✓" : "Verification failed"}
+                        </div>
+                        {onChainResult.blockNumber && (
+                          <p className="text-xs opacity-80">Block #{onChainResult.blockNumber.toString()}</p>
+                        )}
+                        {onChainResult.reason && !onChainResult.verified && (
+                          <p className="text-xs mt-1 opacity-80">{onChainResult.reason}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
               </>
             )}
 

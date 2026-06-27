@@ -24,18 +24,6 @@ export function TopNavBar() {
               Chronicle
             </span>
           </Link>
-
-          {/* Search Bar (desktop) */}
-          <div className="hidden md:flex items-center bg-surface-container-low rounded-[0.25rem] border border-outline-variant px-md py-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all w-64">
-            <span className="material-symbols-outlined text-on-surface-variant mr-sm text-[18px]">
-              search
-            </span>
-            <input
-              className="bg-transparent border-none outline-none w-full text-sm text-on-surface placeholder:text-on-surface-variant p-0 focus:ring-0"
-              placeholder="Search hash, ID, or file..."
-              type="text"
-            />
-          </div>
         </div>
 
         {/* Navigation Links */}
@@ -58,15 +46,6 @@ export function TopNavBar() {
             );
           })}
         </ul>
-
-        {/* Trailing Action */}
-        <div className="flex items-center gap-md">
-          <ConnectButton
-            showBalance={false}
-            chainStatus="icon"
-            accountStatus="avatar"
-          />
-        </div>
       </div>
     </nav>
   );

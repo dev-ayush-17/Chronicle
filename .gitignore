@@ -6,3 +6,10 @@ node_modules/
 .next/
 dist/
 build/
+WORKFLOW.md
+WORKFLOW.docx
+structure.txt
+docs/
+chronicle_audit_roadmap.md
+WorkFlow.md 
+architecture.md

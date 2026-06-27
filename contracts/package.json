@@ -1,0 +1,30 @@
+{
+  "name": "@chronicle/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ChronicleAnchor smart contract — deploys to Polygon Amoy via Hardhat v3 + Ignition",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy": "hardhat ignition deploy ./ignition/modules/ChronicleAnchor.ts --network sepolia",
+    "deploy:local": "hardhat ignition deploy ./ignition/modules/ChronicleAnchor.ts --network hardhat",
+    "test": "hardhat test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^3.1.7",
+    "@nomicfoundation/hardhat-ignition-viem": "^3.1.6",
+    "@nomicfoundation/hardhat-keystore": "^3.0.12",
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.10",
+    "@nomicfoundation/hardhat-node-test-runner": "^3.0.17",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.7",
+    "@nomicfoundation/hardhat-verify": "^3.0.20",
+    "@nomicfoundation/hardhat-viem": "^3.0.6",
+    "@nomicfoundation/hardhat-viem-assertions": "^3.1.1",
+    "@nomicfoundation/ignition-core": "^3.1.7",
+    "@types/node": "^22.0.0",
+    "dotenv": "^16.5.0",
+    "hardhat": "^3.9.0",
+    "typescript": "^5.8.3",
+    "viem": "^2.53.1"
+  }
+}
